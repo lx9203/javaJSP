@@ -3,7 +3,7 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 %>
-<jsp:useBean id="member" scope="page" class="Member.MemberBean"></jsp:useBean>
+<jsp:useBean id="member" scope="page" class="member.MemberBean"></jsp:useBean>
 <jsp:setProperty property="*" name="member" />
 <%
 	member.getNewId();
