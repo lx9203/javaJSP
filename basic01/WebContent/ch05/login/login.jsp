@@ -45,7 +45,7 @@ label span {
 		<br>
 		<hr>
 		<br>
-		<form name="loginForm" action=/jspbook/ch05/loginProc.jsp method=post>
+		<form name="loginForm" action=/jspbook/ch05/login/loginProc.jsp method=post>
 			<table bgcolor="LavenderBlush">
 				<tr><td ><span>ID : </span></td> 
 					<td colspan="3"><input type="text" name="id" size="28"></td></tr>
