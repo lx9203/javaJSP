@@ -7,6 +7,15 @@ public class MemberDTO {
 	private String birthday;
 	private String address;
 
+	public MemberDTO(int id, String password, String name, String birthday, String address) {
+		super();
+		this.id = id;
+		this.password = password;
+		this.name = name;
+		this.birthday = birthday;
+		this.address = address;
+	}
+
 	public MemberDTO(String password, String name, String birthday, String address) {
 		this.password = password;
 		this.name = name;

@@ -29,16 +29,17 @@
 <title>title</title>
 </head>
 <body>
-<%
 	if(result == MemberDAO.ID_PASSWORD_MATCH){
 		response.sendRedirect("login_main.jsp");
 	} else {
-%>
-	<jsp:forward page="login.jsp">
-		<jsp:param name="error" value="<%=errorMessage%>" />
-	</jsp:forward>
-<%
+		String url = "login.jsp?error=" + errorMessage;
+		RequestDispatcher dispatcher = request.getRequestDispatcher(url);
+		dispatcher.forward(request, response);
 	}
-%>
+
+//	<jsp:forward page="login.jsp">
+//		<jsp:param name="error" value="<%=errorMessage%>" />
+//	</jsp:forward>
+
 </body>
 </html>

@@ -25,17 +25,17 @@ public class MemberDAO {
 	
 	public int verifyIDPassword(int id, String password) {
 		System.out.println("verifyIdPassword(): " + id + ", " + password);
-		String query = "selct password from member where id=?;";
+		String query = "select hashed from member where id=?;";
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
-		String dbPassword = "";
+		String hashedPassword = "";
 		try {
 			pStmt = conn.prepareStatement(query);
 			pStmt.setInt(1, id);
 			rs = pStmt.executeQuery();
 			while(rs.next()) {
-				dbPassword = rs.getString(1);
-				if(dbPassword.equals(password))
+				hashedPassword = rs.getString(1);
+				if(BCrypt.checkpw(password, hashedPassword))
 					return ID_PASSWORD_MATCH;
 				else
 					return PASSWORD_IS_WRONG;
@@ -149,14 +149,16 @@ public class MemberDAO {
 	}
 
 	public void insertMember(MemberDTO member) { // insert
-		String query = "insert into member values (default, ?, ?, ?, ?);";
+		String query = "insert into member (password, name, birthday, address, hashed) value(?, ?, ?, ?, ?);";
 		PreparedStatement pStmt = null;
 		try {
+			String hp = BCrypt.hashpw(member.getPassword(), BCrypt.gensalt());
 			pStmt = conn.prepareStatement(query);
-			pStmt.setString(1, member.getPassword());
+			pStmt.setString(1, "*");
 			pStmt.setString(2, member.getName());
 			pStmt.setString(3, member.getBirthday());
 			pStmt.setString(4, member.getAddress());
+			pStmt.setString(5, hp);
 
 			pStmt.executeUpdate();
 		} catch (Exception e) {
@@ -170,7 +172,39 @@ public class MemberDAO {
 			}
 		}
 	}
+	
+	public void initPassword() {
+		List<MemberDTO> mList = selectMemberAll();
+		for (MemberDTO member : mList) {
+			int id = member.getId();
+			String plainPassword = member.getPassword();
+			String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
+			updatePassword(id, hashedPassword);
+					
+		}
+	}
 
+	public void updatePassword(int id, String hashed) { // update
+		String query = "update member set hashed=? where id=?;";
+		PreparedStatement pStmt = null;
+		try {
+			pStmt = conn.prepareStatement(query);
+			pStmt.setString(1, hashed);
+			pStmt.setInt(2, id);
+			
+			pStmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pStmt != null && !pStmt.isClosed())
+					pStmt.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+	}
+	
 	public void updateMember(MemberDTO member) { // update
 		String query = "update member set password=?, name=?, birthday=?, address=? where id=?;";
 		PreparedStatement pStmt = null;

@@ -15,27 +15,28 @@ input:hover, textarea:hover, button:hover { /* 마우스 올라 올 때 */
 }
 
 input[type=text]:focus, input[type=password]:focus { /* 포커스 받을 때 */
-	font-size: 120%;
+	font-size: 100%;
 }
 
-label {
-	display: block; /* 새 라인에서 시작 */
-	padding: 5px;
-}
+
 
 label span {
+	align : center;
 	display: inline-block;
 	width: 90px;
 	text-align: right;
 	padding: 10px;
 }
+
+
+
 </style>
 </head>
 <body bgcolor="LavenderBlush">
 	<%
 		String error = request.getParameter("error");
-		System.out.println(error);
 		if (error != null) {
+			System.out.println(error);
 			out.println("<script>alert('" + error + "')</script>");
 		}
 	%>
@@ -45,20 +46,17 @@ label span {
 		<br>
 		<hr>
 		<br>
-		<form name="loginForm" action=/jspbook/ch05/login/loginProc.jsp method=post>
+		<form name="loginForm" action=/jspbook/ch05/login/LoginProcServlet method=post>
 			<table bgcolor="LavenderBlush">
 				<tr><td ><span>ID : </span></td> 
 					<td colspan="3"><input type="text" name="id" size="28"></td></tr>
 				<tr><td><span>Password : </span></td> 
 					<td colspan="3"><input type="password" name="password" size="28"></td></tr>
-				<tr>
-					<td><span></span></td>
-					<td><label><input type="submit" value="로그인" name="B1"></label></td>
-					<td><label><input type="reset" value="다시입력" name="B2"></label></td>
-					<td><button onclick="location.href='register.html'">회원가입</button></td>
-				</tr>
+			<tr><td><span></span></td><td><label><input type="submit" value="로그인" name="B1"></label></td>
+			<td><label><input type="reset" value="다시입력" style="align:left" name="B2"></label></td></tr>
 			</table>
 		</form>
+			<button onclick="location.href='register.html'">회원가입</button>
 	</center>
 </body>
 </html>
