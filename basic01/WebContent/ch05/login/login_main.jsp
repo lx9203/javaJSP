@@ -27,6 +27,7 @@ td, th {
 			<th>생일</th>
 			<th>주소</th>
 			<th></th>
+			<th></th>
 		</tr>
 		<%
 			for (MemberDTO member : list) {
@@ -37,9 +38,11 @@ td, th {
 			<td><%=member.getBirthday()%></td>
 			<td><%=member.getAddress()%></td>
 			<%
-				String uri = "memberProcServlet?action=update&id=" + member.getId();
+				String updateUri = "memberProcServlet?action=update&id=" + member.getId();
+				String deleteUri = "memberProcServlet?action=delete&id=" + member.getId();
 			%>
-			<td><button onclick="location.href='<%=uri%>'">수정</button></td>
+			<td><button onclick="location.href='<%=updateUri%>'">수정</button></td>
+			<td><button onclick="location.href='<%=deleteUri%>'">삭제</button></td>
 		</tr>
 		<%
 			}

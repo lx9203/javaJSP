@@ -21,15 +21,29 @@ public class MemberProcServlet extends HttpServlet {
 		String action = request.getParameter("action");
 		String strId = request.getParameter("id");
 		System.out.println(action + " " + strId);
+		MemberDAO mDao = new MemberDAO();
+		RequestDispatcher rd;
 		switch (action) {
-		case "update":
-			MemberDAO mDao = new MemberDAO();
+		case "update" :
 			MemberDTO member = mDao.selectMemberOne(Integer.parseInt(strId));
 
 			request.setAttribute("member", member);
-			RequestDispatcher rd = request.getRequestDispatcher("update.jsp");
+			rd = request.getRequestDispatcher("update.jsp");
 			rd.forward(request, response);
 			mDao.close();
+			break;
+		case "delete" : 
+			mDao = new MemberDAO();
+			mDao.deleteMember(Integer.parseInt(strId));
+			mDao.close();
+			//response.sendRedirect("login_main.jsp");
+			String message = "id = " + strId + " 가 삭제되었습니다.";
+			String url = "login_main.jsp";
+			request.setAttribute("message", message);
+			request.setAttribute("url", url);
+			rd = request.getRequestDispatcher("alertMsg.jsp");
+			rd.forward(request, response);
+			break;
 		default:
 		}
 	}
