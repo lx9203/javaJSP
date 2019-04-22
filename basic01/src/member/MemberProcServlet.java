@@ -23,6 +23,9 @@ public class MemberProcServlet extends HttpServlet {
 		System.out.println(action + " " + strId);
 		MemberDAO mDao = new MemberDAO();
 		RequestDispatcher rd;
+		
+
+		
 		switch (action) {
 		case "update" :
 			MemberDTO member = mDao.selectMemberOne(Integer.parseInt(strId));
@@ -44,8 +47,43 @@ public class MemberProcServlet extends HttpServlet {
 			rd = request.getRequestDispatcher("alertMsg.jsp");
 			rd.forward(request, response);
 			break;
+		case "login" :
+			
+			break;
+		case "execute" :
+			
+			break;
 		default:
+			
 		}
+		
+//		switch (action) {
+//		case "update" :
+//			MemberDTO member = mDao.selectMemberOne(Integer.parseInt(strId));
+//			
+//			request.setAttribute("member", member);
+//			rd = request.getRequestDispatcher("update.jsp");
+//			rd.forward(request, response);
+//			mDao.close();
+//			break;
+//		case "delete" : 
+//			mDao = new MemberDAO();
+//			mDao.deleteMember(Integer.parseInt(strId));
+//			mDao.close();
+//			//response.sendRedirect("login_main.jsp");
+//			String message = "id = " + strId + " 가 삭제되었습니다.";
+//			String url = "login_main.jsp";
+//			request.setAttribute("message", message);
+//			request.setAttribute("url", url);
+//			rd = request.getRequestDispatcher("alertMsg.jsp");
+//			rd.forward(request, response);
+//			break;
+//		case "login" :
+//			
+//			break;
+//		default:
+//		}
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
