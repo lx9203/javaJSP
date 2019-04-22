@@ -3,10 +3,10 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 %>
-<jsp:useBean id="member" scope="page" class="member.MemberBean"></jsp:useBean>
-<jsp:setProperty property="*" name="member" />
+<%--  <jsp:useBean id="member" scope="page" ></jsp:useBean> --%>
+<%-- <jsp:setProperty property="*" name="member" /> --%>
 <%
-	member.getNewId();
+	//member.getNewId();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

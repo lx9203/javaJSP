@@ -1,10 +1,12 @@
-package member;
+package member.notUse;
 
 import java.io.*;
 
 import javax.servlet.*;
 import javax.servlet.annotation.*;
 import javax.servlet.http.*;
+
+import member.*;
 
 @WebServlet("/ch05/login/updateMemberServlet")
 public class UpdateMemberServlet extends HttpServlet {
