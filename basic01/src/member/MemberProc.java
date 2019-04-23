@@ -8,9 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-/**
- * Servlet implementation class MemberProc
- */
 @WebServlet("/member/memberProcServlet")
 public class MemberProc extends HttpServlet {
 	private static final long serialVersionUID = 1L;

@@ -30,6 +30,7 @@
 	<%=(String)session.getAttribute("memberName")%> 회원님 반갑습니다.
 	<a href="twitter_list.jsp">트윗</a>&nbsp;&nbsp;&nbsp;
 	<a href="/jspbook/member/memberProcServlet?action=logout">로그아웃</a>
+	<a href="bbsMain.jsp">게시판</a>
 	<hr>
 	<table border="1" style="border-collapse:collapse;" height=300, width=600>
 	<tr bgcolor="pink"><th>아이디</th><th>이름</th><th>생일</th><th>주소</th><th>액션</th></tr>
