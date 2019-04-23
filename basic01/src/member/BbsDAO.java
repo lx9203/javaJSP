@@ -46,7 +46,8 @@ public class BbsDAO {
     }
     
 	public BbsDTO selectOne(int id) {
-		String query = "select * from bbs where id=?;";
+		String query ="select bbs.id, bbs.title, member.name, bbs.date, bbs.content from bbs " + 
+				"inner join member on bbs.memberId=member.id where id=?;";
 		PreparedStatement pStmt = null;
 		BbsDTO bDto = new BbsDTO();
 		try {
@@ -59,6 +60,7 @@ public class BbsDAO {
 				bDto.setTitle(rs.getString(3));
 				bDto.setDate(rs.getString(4));
 				bDto.setContent(rs.getString(5));
+				bDto.setName(rs.getString(6));
 			}
 			rs.close();
 		} catch (Exception e) {
