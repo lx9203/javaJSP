@@ -13,6 +13,14 @@
 	<title>메인 페이지</title>
 	<style>
 		td, th { text-align: center; }
+		.button {
+			font-weight: bold; font-size: 9pt;
+			border: 1px solid powderblue;
+		}
+		input[type=submit] {
+			width: 5em; height: 2.5em;
+			font-weight: bold; font-size: 10pt;
+		}
 	</style>
 </head>
 <body>
@@ -20,8 +28,10 @@
 	<h3>회원 명단</h3>
 	<hr>
 	<%=(String)session.getAttribute("memberName")%> 회원님 반갑습니다.
+	<a href="twitter_list.jsp">트윗</a>&nbsp;&nbsp;&nbsp;
 	<a href="/jspbook/member/memberProcServlet?action=logout">로그아웃</a>
-	<table border="1" style="border-collapse:collapse;">
+	<hr>
+	<table border="1" style="border-collapse:collapse;" height=300, width=600>
 	<tr bgcolor="pink"><th>아이디</th><th>이름</th><th>생일</th><th>주소</th><th>액션</th></tr>
 	<%
 	for (MemberDTO member: list) {
