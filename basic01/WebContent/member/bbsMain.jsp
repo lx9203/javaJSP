@@ -36,7 +36,14 @@
 	%>
 	
 	</table>
-	<button onclick="location.href='board.html'">글작성</button>
+	<p>
+	<table>
+	<tr>
+		<td><button onclick="location.href='board.html'">글작성</button></td>
+		<td><button onclick="location.href='bbsSearch.jsp'">검색</button></td>
+	</tr>
+	</table>
+	<button onclick="location.href='loginMain.jsp'">돌아가기</button>
 	</center>
 </body>
 </html>

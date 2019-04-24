@@ -46,8 +46,8 @@ public class BbsDAO {
     }
     
 	public BbsDTO selectOne(int id) {
-		String query ="select bbs.id, bbs.title, member.name, bbs.date, bbs.content from bbs " + 
-				"inner join member on bbs.memberId=member.id where id=?;";
+		String query ="select bbs.id, bbs.memberId, bbs.title, member.name, bbs.date, bbs.content from bbs " + 
+				"inner join member on bbs.memberId=member.id where bbs.id=?;";
 		PreparedStatement pStmt = null;
 		BbsDTO bDto = new BbsDTO();
 		try {
@@ -58,9 +58,9 @@ public class BbsDAO {
 				bDto.setId(rs.getInt(1));
 				bDto.setMemberId(rs.getInt(2));
 				bDto.setTitle(rs.getString(3));
-				bDto.setDate(rs.getString(4));
-				bDto.setContent(rs.getString(5));
-				bDto.setName(rs.getString(6));
+				bDto.setName(rs.getString(4));
+				bDto.setDate(rs.getString(5));
+				bDto.setContent(rs.getString(6));
 			}
 			rs.close();
 		} catch (Exception e) {
@@ -84,7 +84,6 @@ public class BbsDAO {
 		try {
 			pStmt = conn.prepareStatement(query);
 			pStmt.setString(1, bDto.getTitle());
-			//pStmt.setString(2, date);
 			pStmt.setString(2, bDto.getContent());
 			pStmt.setInt(3, bDto.getId());
 			pStmt.executeUpdate();
@@ -174,7 +173,7 @@ public class BbsDAO {
 	
 	public List<BbsDTO> selectJoinAll(int number) {
 		String query = "select bbs.id, bbs.title, member.name, bbs.date from bbs " + 
-				"inner join member on bbs.memberId=member.id order by bbs.id desc limit ?;";
+				"inner join member on bbs.memberId=member.id order by bbs.id desc;";
 		PreparedStatement pStmt = null;
 		List<BbsDTO> bmList = new ArrayList<BbsDTO>();
 		try {

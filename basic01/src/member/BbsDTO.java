@@ -10,6 +10,13 @@ public class BbsDTO {
 	
 	public BbsDTO() {}
 	
+	public BbsDTO(String title, String content) {
+		super();
+		this.title = title;
+		this.content = content;
+	}
+
+
 	public BbsDTO(int memberId, String title, String content) {
 		this.memberId = memberId;
 		this.title = title;
@@ -20,6 +27,16 @@ public class BbsDTO {
 		this.id = id;
 		this.title = title;
 		this.name = name;
+		this.content = content;
+	}
+	
+	public BbsDTO(int id, String title, int memberId, String name, String date, String content) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.memberId = memberId;
+		this.name = name;
+		this.date = date;
 		this.content = content;
 	}
 
@@ -73,5 +90,10 @@ public class BbsDTO {
 	public String toString() {
 		return "BbsMember [id=" + id + ", title=" + title + ", name=" + name + ", date=" + date.substring(0, 16) + "\n content=" + content + "]";
 	}
+	
+	public String doString() {
+		return "BbsDTO [title=" + title + ", content=" + content + "]";
+	}
+	
 	
 }

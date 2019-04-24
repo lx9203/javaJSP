@@ -25,19 +25,18 @@
 %>
 	<h3>작성 글 수정</h3>
 	<hr>
-	<form name="updateForm" action="bbsProcServlet?action=execute" method=post>
+	<form name="updateForm" action="BbsProcServlet?action=execute" method=post>
 		<input type="hidden" id="id" name="id" value="<%=modify.getId()%>">
-		<label><span>아이디:</span>
-			<%=modify.getMemberId()%></label>
-		<label><span>이름:</span>
-			<%=modify.getName()%></label>
+		<label><span>아이디:</span><%=modify.getMemberId()%></label>
+		<label><span>작성자:</span><%=modify.getName()%></label>
 		<label><span>제목:</span>
 			<input type="text" name="title" value="<%=modify.getTitle()%>" size="30"></label>
 		<label><span>내용:</span>
 			<input type="text" name="content" value="<%=modify.getContent()%>" size="100"></label>	
 			<br>
-		<label><span></span><input type="submit" value="수정" name="B1">&nbsp;&nbsp;
-			<input type="reset" value="재작성" name="B2"></label>
+		<span></span><input type="submit" value="수정" name="B1">&nbsp;&nbsp;
+			<input type="reset" value="재작성" name="B2">
 	</form>
+			<button onclick="location.href='bbsMain.jsp'">수정 취소</button>
 </body>
 </html>

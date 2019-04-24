@@ -32,7 +32,7 @@ public class BbsProc extends HttpServlet {
 		String message = null;
 		String url = null;
 		RequestDispatcher rd = null;
-		BbsDAO bDao = null;
+		BbsDAO bDao = null;;
 		BbsDTO bDto = new BbsDTO();
 		int id =0;
 		
@@ -41,7 +41,6 @@ public class BbsProc extends HttpServlet {
 			case "insert" :
 				title = request.getParameter("title");
 				content = request.getParameter("content");
-				
 				bDto = new BbsDTO(memberId, title, content);
 				bDao = new BbsDAO();
 				bDao.insertBbs(bDto);
@@ -49,26 +48,64 @@ public class BbsProc extends HttpServlet {
 				bDao.close();
 				break;
 			case "update" :
-				if (!request.getParameter("id").equals("")) {
-					id = Integer.parseInt(request.getParameter("id"));
+				if (!request.getParameter("id").equals("")) {	// 아이디값이 0이 아니면
+					id = Integer.parseInt(request.getParameter("id")); // 아이디에 아이디값을 저장
 				}
 				bDao = new BbsDAO();
-				bDto = bDao.selectOne(id);
-				if (memberId != bDto.getMemberId()) {
+				bDto = bDao.selectOne(id); // bDto에 id,memberId,title,date,content,name을 저장
+				bDao.close();
+				if (memberId != bDto.getMemberId()) {	// 세션어트리뷰트memberId와 셀렉트원memberId를 비교
 					message = "Id = " + id + " 에 대한 수정 권한이 없습니다.";
 					url = "bbsMain.jsp";
 					request.setAttribute("message", message);
 					request.setAttribute("url", url);
 					rd = request.getRequestDispatcher("alertMsg.jsp");
-					rd.forward(request, response);
-					break;
-				}
-				bDao.close();
-				request.setAttribute("modify", bDto);
+					rd.forward(request, response);		
+					break;								// 경고창을 띄우고 돌아가기
+				} 								// 멤버 아이디가 같으면
+				request.setAttribute("modify", bDto);	// modify라는 이름으로 bDto저장
 				rd = request.getRequestDispatcher("bbsUpdate.jsp");
 		        rd.forward(request, response);
 		        break;
 				
+			case "delete" :
+				if (!request.getParameter("id").equals("")) {
+					id = Integer.parseInt(request.getParameter("id")); 
+				}
+				bDao = new BbsDAO();
+				bDto = bDao.selectOne(id); // bDto에 id,memberId,title,date,content,name을 저장
+				if (memberId != bDto.getMemberId()) {
+					message = "id = " + id + " 에 대한 삭제권한이 없습니다.";
+					url = "bbsMain.jsp";
+					request.setAttribute("message", message);
+					request.setAttribute("url", url);
+					rd = request.getRequestDispatcher("alertMsg.jsp");
+					rd.forward(request, response);
+					bDao.close();
+					break;
+				}
+				bDao.deleteBbs(id);
+				bDao.close();
+				//response.sendRedirect("loginMain.jsp");
+				message = "id = " + id + " 이/가 삭제되었습니다.";
+				url = "bbsMain.jsp";
+				request.setAttribute("message", message);
+				request.setAttribute("url", url);
+				rd = request.getRequestDispatcher("alertMsg.jsp");
+				rd.forward(request, response);
+				break;
+			case "execute":
+				title = request.getParameter("title");
+				content = request.getParameter("content");
+				id = Integer.parseInt(request.getParameter("id")); 
+				bDto = new BbsDTO(id, title, "*", content);
+				bDao = new BbsDAO();
+				bDao.updateBbs(bDto);
+				bDao.close();
+				
+				rd = request.getRequestDispatcher("bbsMain.jsp");
+		        rd.forward(request, response);
+		        break;
 		}
 	}
 
