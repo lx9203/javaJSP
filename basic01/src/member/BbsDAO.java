@@ -232,4 +232,56 @@ public class BbsDAO {
 				conn.close();
 		} catch (Exception se1) { }
 	}
+	
+	public int getNext() {
+		String SQL = "select id from bbs order by id desc;";
+		try {
+			PreparedStatement pStmt = conn.prepareStatement(SQL);
+			ResultSet rs = pStmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1) + 1;
+			} return 1;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1;
+	} 
+	
+	public ArrayList<BbsDTO> getList(int pageNumber){
+		String SQL = "select * from bbs where bbs.memberId < ? order by date desc limit 10";
+		ArrayList<BbsDTO> list = new ArrayList<BbsDTO>();
+			try {
+				PreparedStatement pStmt = conn.prepareStatement(SQL);
+				pStmt.setInt(1,  getNext() - (pageNumber - 1) * 10);
+				ResultSet rs = pStmt.executeQuery();
+				while (rs.next()) {
+					BbsDTO bDto = new BbsDTO();
+					bDto.setId(rs.getInt(1));
+					bDto.setMemberId(rs.getInt(2));
+					bDto.setTitle(rs.getString(3));
+					bDto.setName(rs.getString(4));
+					bDto.setContent(rs.getString(5));
+					list.add(bDto);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return list;
+	 }
+ 
+	public boolean nextPage(int pageNumber) {
+		String SQL = "select * from bbs where bbs.memberId < ? order by date desc limit 10";
+		ArrayList<BbsDTO> list = new ArrayList<BbsDTO>();
+			try {
+				PreparedStatement pStmt = conn.prepareStatement(SQL);
+				pStmt.setInt(1,  getNext() - (pageNumber - 1) * 10);
+				ResultSet rs = pStmt.executeQuery();
+				while (rs.next()) {
+					return true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return false;
+	}
 }

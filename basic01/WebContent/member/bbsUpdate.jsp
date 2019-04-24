@@ -32,7 +32,7 @@
 		<label><span>제목:</span>
 			<input type="text" name="title" value="<%=modify.getTitle()%>" size="30"></label>
 		<label><span>내용:</span>
-			<input type="text" name="content" value="<%=modify.getContent()%>" size="100"></label>	
+			<textarea name="content" value="<%=modify.getContent()%>" style="height:250px; width:400px"></textarea></label>	
 			<br>
 		<span></span><input type="submit" value="수정" name="B1">&nbsp;&nbsp;
 			<input type="reset" value="재작성" name="B2">
