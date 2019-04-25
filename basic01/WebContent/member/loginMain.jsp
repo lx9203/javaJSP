@@ -1,11 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" import="java.util.*"%>
 <%@ page import="member.*" %> 
-<%
-	MemberDAO mDao = new MemberDAO();
-	List<MemberDTO> list = mDao.selectAll();
-	mDao.close();
-%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -27,29 +24,33 @@
 	<center>
 	<h3>회원 명단</h3>
 	<hr>
-	<%=(String)session.getAttribute("memberName")%> 회원님 반갑습니다.&nbsp;
+	${ memberName } 회원님 반갑습니다.
+<%-- 	<%=(String)session.getAttribute("memberName")%> 회원님 반갑습니다.&nbsp; --%>
 	<a href="twitter_list.jsp">트윗</a>&nbsp;&nbsp;
-	<a href="bbsMain.jsp">게시판</a>&nbsp;&nbsp;
+	<a href="BbsProcServlet?action=bbsJoin">게시판</a>&nbsp;&nbsp;
 	<a href="/jspbook/member/memberProcServlet?action=logout">로그아웃</a>
 	<hr>
 	<table border="1" style="border-collapse:collapse;" height=300, width=600>
 	<tr bgcolor="pink"><th>아이디</th><th>이름</th><th>생일</th><th>주소</th><th>액션</th></tr>
-	<%
+	<c:set var="list" value="${requestScope.members}" />
+	<%-- <%
 	for (MemberDTO member: list) {
-	%>
-		<tr><td><%=member.getId()%></td>
-		<td><%=member.getName()%></td>
-		<td><%=member.getBirthday()%></td>
-		<td><%=member.getAddress()%></td>
-		<%
+	%> --%>
+	<c:forEach var="member" items="${list}">
+		<tr><td>${member.id }</td>
+		<td>${member.name }</td>
+		<td>${member.birthday }</td>
+		<td>${member.address }</td>
+		<%-- <%
 			String updateUri = "memberProcServlet?action=update&id=" + member.getId();
 			String deleteUri = "memberProcServlet?action=delete&id=" + member.getId();
-		%>
-		<td>&nbsp;<button onclick="location.href='<%=updateUri%>'">수정</button>&nbsp;
-			<button onclick="location.href='<%=deleteUri%>'">삭제</button>&nbsp;</td></tr>
-	<%
+		%> --%>
+		<td>&nbsp;<button onclick="location.href='memberProcServlet?action=update&id=${member.id}'">수정</button>&nbsp;
+			      <button onclick="location.href='memberProcServlet?action=delete&id=${member.id}'">삭제</button>&nbsp;</td></tr>
+	<%-- <%
 	}
-	%>
+	%> --%>
+	</c:forEach>
 	</table>
 	</center>
 </body>

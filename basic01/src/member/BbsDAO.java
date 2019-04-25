@@ -140,22 +140,21 @@ public class BbsDAO {
 		}
 	}
 	
-	public List<BbsDTO> ViewData() {
+	public BbsMember ViewData(int id) {
 		String query = "select bbs.id, bbs.title, member.name, bbs.date, bbs.content from bbs " + 
-				"inner join member on bbs.memberId=member.id;";
+				"inner join member on bbs.memberId=member.id where bbs.id=?;";;
 		PreparedStatement pStmt = null;
-		List<BbsDTO> list = new ArrayList<BbsDTO>();
+		BbsMember bmDto = new BbsMember();
 		try {
 			pStmt = conn.prepareStatement(query);
+			pStmt.setInt(1, id);
 			ResultSet rs = pStmt.executeQuery();
 			while (rs.next()) {				
-				BbsDTO bmDto = new BbsDTO();
 				bmDto.setId(rs.getInt(1));
 				bmDto.setTitle(rs.getString(2));
 				bmDto.setName(rs.getString(3));
-				bmDto.setDate(rs.getString(4));
+				bmDto.setDate(rs.getString(4).substring(0, 16));
 				bmDto.setContent(rs.getString(5));
-				list.add(bmDto);
 			}
 			rs.close();
 		} catch (Exception e) {
@@ -168,17 +167,16 @@ public class BbsDAO {
 				se.printStackTrace();
 			}
 		}
-		return list;
+		return bmDto;
 	}
 	
-	public List<BbsDTO> selectJoinAll(int number) {
+	public List<BbsDTO> selectJoinAll() {
 		String query = "select bbs.id, bbs.title, member.name, bbs.date from bbs " + 
 				"inner join member on bbs.memberId=member.id order by bbs.id desc;";
 		PreparedStatement pStmt = null;
 		List<BbsDTO> bmList = new ArrayList<BbsDTO>();
 		try {
 			pStmt = conn.prepareStatement(query);
-			pStmt.setInt(1, number);
 			ResultSet rs = pStmt.executeQuery();
 			while (rs.next()) {	
 				BbsDTO bmDto = new BbsDTO();

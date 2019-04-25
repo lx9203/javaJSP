@@ -1,11 +1,11 @@
 package member;
 
-import java.io.IOException;
-import java.net.URLEncoder;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+import javax.servlet.*;
+import javax.servlet.annotation.*;
 import javax.servlet.http.*;
 
 @WebServlet("/member/memberProcServlet")
@@ -46,7 +46,7 @@ public class MemberProc extends HttpServlet {
 			}
 			if (id != (Integer)session.getAttribute("memberId")) {
 				message = "id = " + id + " 에 대한 수정 권한이 없습니다.";
-				url = "loginMain.jsp";
+				url = "memberProcServlet?action=memberJoin";
 				request.setAttribute("message", message);
 				request.setAttribute("url", url);
 				rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -67,7 +67,7 @@ public class MemberProc extends HttpServlet {
 			}
 			if (id != (Integer)session.getAttribute("memberId")) {
 				message = "id = " + id + " 에 대한 삭제권한이 없습니다.";
-				url = "loginMain.jsp";
+				url = "memberProcServlet?action=memberJoin";
 				request.setAttribute("message", message);
 				request.setAttribute("url", url);
 				rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -79,7 +79,7 @@ public class MemberProc extends HttpServlet {
 			mDao.close();
 			//response.sendRedirect("loginMain.jsp");
 			message = "id = " + id + " 이/가 삭제되었습니다.";
-			url = "loginMain.jsp";
+			url = "memberProcServlet?action=memberJoin";
 			request.setAttribute("message", message);
 			request.setAttribute("url", url);
 			rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -109,11 +109,15 @@ public class MemberProc extends HttpServlet {
 				member = mDao.searchById(id);
 				session.setAttribute("memberId", id);
 				session.setAttribute("memberName", member.getName());
-				response.sendRedirect("loginMain.jsp");
+				response.sendRedirect("memberProcServlet?action=memberJoin");
 			} else {
-				String uri = "login.jsp?error=" + URLEncoder.encode(errorMessage, "UTF-8");
+				/*String uri = "login.jsp?error=" + URLEncoder.encode(errorMessage, "UTF-8");
 						//org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf(errorMessage), request.getCharacterEncoding());
-				response.sendRedirect(uri); 
+				response.sendRedirect(uri);*/ 
+				request.setAttribute("message", errorMessage);
+				request.setAttribute("url", "login.jsp");
+				rd = request.getRequestDispatcher("alertMsg.jsp");
+				rd.forward(request, response);
 			}
 			mDao.close();
 			break;
@@ -140,12 +144,12 @@ public class MemberProc extends HttpServlet {
 			session.setAttribute("memberName", name);
 			
 			message = "귀하의 id = " + member.getId() + " 입니다.";
-			url = "loginMain.jsp";
+			url = "memberProcServlet?action=memberJoin";
 			request.setAttribute("message", message);
 			request.setAttribute("url", url);
 			rd = request.getRequestDispatcher("alertMsg.jsp");
 			rd.forward(request, response);
-			response.sendRedirect("loginMain.jsp");
+			response.sendRedirect("memberProcServlet?action=memberJoin");
 			mDao.close();
 			break;
 			
@@ -166,12 +170,19 @@ public class MemberProc extends HttpServlet {
 			
 			message = "다음과 같이 수정하였습니다.\\n" + member.toString();
 			request.setAttribute("message", message);
-			request.setAttribute("url", "loginMain.jsp");
+			request.setAttribute("url", "memberProcServlet?action=memberJoin");
 			rd = request.getRequestDispatcher("alertMsg.jsp");
 	        rd.forward(request, response);
 			//response.sendRedirect("loginMain.jsp");
 			break;
-			
+		case "memberJoin" :
+			mDao = new MemberDAO();
+			List<MemberDTO> list = (List<MemberDTO>) mDao.selectAll();
+			request.setAttribute("members", list);
+			rd = request.getRequestDispatcher("loginMain.jsp");
+			rd.forward(request, response);
+			mDao.close();
+			break;	
 			
 		default:
 		}

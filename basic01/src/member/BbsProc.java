@@ -1,6 +1,7 @@
 package member;
 
 import java.io.*;
+import java.util.*;
 
 import javax.servlet.*;
 import javax.servlet.annotation.*;
@@ -35,6 +36,7 @@ public class BbsProc extends HttpServlet {
 		BbsDAO bDao = null;;
 		BbsDTO bDto = new BbsDTO();
 		int id =0;
+		BbsMember bMem = null;
 		
 		String action = request.getParameter("action");
 		switch(action) {
@@ -44,7 +46,7 @@ public class BbsProc extends HttpServlet {
 				bDto = new BbsDTO(memberId, title, content);
 				bDao = new BbsDAO();
 				bDao.insertBbs(bDto);
-				response.sendRedirect("bbsMain.jsp");
+				response.sendRedirect("BbsProcServlet?action=bbsJoin");
 				bDao.close();
 				break;
 			case "update" :
@@ -56,14 +58,17 @@ public class BbsProc extends HttpServlet {
 				bDao.close();
 				if (memberId != bDto.getMemberId()) {	// 세션어트리뷰트memberId와 셀렉트원memberId를 비교
 					message = "Id = " + id + " 에 대한 수정 권한이 없습니다.";
-					url = "bbsMain.jsp";
+					url = "BbsProcServlet?action=bbsJoin";
 					request.setAttribute("message", message);
 					request.setAttribute("url", url);
 					rd = request.getRequestDispatcher("alertMsg.jsp");
 					rd.forward(request, response);		
 					break;								// 경고창을 띄우고 돌아가기
 				} 								// 멤버 아이디가 같으면
-				request.setAttribute("modify", bDto);	// modify라는 이름으로 bDto저장
+				bDao = new BbsDAO();
+				bDto = bDao.selectOne(id);
+				bDao.close();
+				request.setAttribute("member", bDto);
 				rd = request.getRequestDispatcher("bbsUpdate.jsp");
 		        rd.forward(request, response);
 		        break;
@@ -76,7 +81,7 @@ public class BbsProc extends HttpServlet {
 				bDto = bDao.selectOne(id); // bDto에 id,memberId,title,date,content,name을 저장
 				if (memberId != bDto.getMemberId()) {
 					message = "id = " + id + " 에 대한 삭제권한이 없습니다.";
-					url = "bbsMain.jsp";
+					url = "BbsProcServlet?action=bbsJoin";
 					request.setAttribute("message", message);
 					request.setAttribute("url", url);
 					rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -88,7 +93,7 @@ public class BbsProc extends HttpServlet {
 				bDao.close();
 				//response.sendRedirect("loginMain.jsp");
 				message = "id = " + id + " 이/가 삭제되었습니다.";
-				url = "bbsMain.jsp";
+				url = "BbsProcServlet?action=bbsJoin";
 				request.setAttribute("message", message);
 				request.setAttribute("url", url);
 				rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -103,9 +108,30 @@ public class BbsProc extends HttpServlet {
 				bDao.updateBbs(bDto);
 				bDao.close();
 				
-				rd = request.getRequestDispatcher("bbsMain.jsp");
+				rd = request.getRequestDispatcher("BbsProcServlet?action=bbsJoin");
 		        rd.forward(request, response);
 		        break;
+			case "bbsJoin" :
+				
+				bDao = new BbsDAO();
+				List<BbsDTO> list = (List<BbsDTO>) bDao.selectJoinAll();
+				request.setAttribute("modify", list);
+				rd = request.getRequestDispatcher("bbsMain.jsp");
+				rd.forward(request, response);
+				bDao.close();
+				break;
+			case "view":
+				if (!request.getParameter("id").equals("")) {
+					id = Integer.parseInt(request.getParameter("id"));
+				}
+				bDao = new BbsDAO();
+				bMem = bDao.ViewData(id);
+				bDao.close();
+				
+				request.setAttribute("bbsMember", bMem);
+				rd = request.getRequestDispatcher("bbsView.jsp");
+		        rd.forward(request, response);
+				break;	
 		}
 	}
 
