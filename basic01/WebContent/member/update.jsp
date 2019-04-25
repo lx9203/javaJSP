@@ -20,18 +20,12 @@
 	</style>
 </head>
 <body>
-<%-- <%
-	//request.setCharacterEncoding("UTF-8");
-	MemberDTO member = (MemberDTO) request.getAttribute("member");
-%> --%>
-	<c:set var="member" value="${requestScope.member}" />
 	<h3>회원 수정</h3>
 	<hr>
-	<!-- <form name="updateForm" action="/jspbook/member/updateMemberServlet" method=post> -->
-	<form name="updateForm" action="/jspbook/member/memberProcServlet?action=execute" method=post>
+	<c:set var="member" value="${requestScope.member}"/>
+	<form name="updateForm" action="memberProcServlet?action=execute" method=post>
 		<input type="hidden" id="id" name="id" value="${member.id}">
-		<label><span>아이디:</span>
-			${member.id}</label>
+		<label><span>아이디:</span>${member.id}</label>
 		<label><span>이름:</span>
 			<input type="text" name="name" value="${member.name}" size="10"></label>
 		<label><span>생일:</span>

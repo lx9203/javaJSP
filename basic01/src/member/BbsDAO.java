@@ -1,10 +1,15 @@
 package member;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BbsDAO {
-	private static final String USERNAME = "javauser";
+    private static final String USERNAME = "javauser";
     private static final String PASSWORD = "javapass";
     private static final String URL = "jdbc:mysql://localhost:3306/world?verifyServerCertificate=false&useSSL=false";
     private Connection conn;
@@ -45,9 +50,32 @@ public class BbsDAO {
 		}	
     }
     
+    public int getCount() {
+		String query = "select count(*) from bbs;";
+		PreparedStatement pStmt = null;
+		int count = 0;
+		try {
+			pStmt = conn.prepareStatement(query);
+			ResultSet rs = pStmt.executeQuery();
+			while (rs.next()) {				
+				count = rs.getInt(1);
+			}
+			rs.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pStmt != null && !pStmt.isClosed()) 
+					pStmt.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		return count;
+	}
+    
 	public BbsDTO selectOne(int id) {
-		String query ="select bbs.id, bbs.memberId, bbs.title, member.name, bbs.date, bbs.content from bbs " + 
-				"inner join member on bbs.memberId=member.id where bbs.id=?;";
+		String query = "select * from bbs where id=?;";
 		PreparedStatement pStmt = null;
 		BbsDTO bDto = new BbsDTO();
 		try {
@@ -58,9 +86,8 @@ public class BbsDAO {
 				bDto.setId(rs.getInt(1));
 				bDto.setMemberId(rs.getInt(2));
 				bDto.setTitle(rs.getString(3));
-				bDto.setName(rs.getString(4));
-				bDto.setDate(rs.getString(5));
-				bDto.setContent(rs.getString(6));
+				bDto.setDate(rs.getString(4));
+				bDto.setContent(rs.getString(5));
 			}
 			rs.close();
 		} catch (Exception e) {
@@ -84,6 +111,7 @@ public class BbsDAO {
 		try {
 			pStmt = conn.prepareStatement(query);
 			pStmt.setString(1, bDto.getTitle());
+			//pStmt.setString(2, date);
 			pStmt.setString(2, bDto.getContent());
 			pStmt.setInt(3, bDto.getId());
 			pStmt.executeUpdate();
@@ -145,6 +173,7 @@ public class BbsDAO {
 				"inner join member on bbs.memberId=member.id where bbs.id=?;";;
 		PreparedStatement pStmt = null;
 		BbsMember bmDto = new BbsMember();
+		int result = -1;
 		try {
 			pStmt = conn.prepareStatement(query);
 			pStmt.setInt(1, id);
@@ -170,20 +199,30 @@ public class BbsDAO {
 		return bmDto;
 	}
 	
-	public List<BbsDTO> selectJoinAll() {
-		String query = "select bbs.id, bbs.title, member.name, bbs.date from bbs " + 
-				"inner join member on bbs.memberId=member.id order by bbs.id desc;";
+	public List<BbsMember> selectJoinAll(int page) {
+		int offset = 0;
+		String query = null;
+		if (page == 0) {	// page가 0이면 모든 데이터를 보냄
+			query = "select bbs.id, bbs.title, member.name, bbs.date from bbs " + 
+					"inner join member on bbs.memberId=member.id order by bbs.id desc;";
+		} else {			// page가 0이 아니면 해당 페이지 데이터만 보냄
+			query = "select bbs.id, bbs.title, member.name, bbs.date from bbs " + 
+					"inner join member on bbs.memberId=member.id order by bbs.id desc limit ?, 10;";
+			offset = (page - 1) * 10;
+		}
 		PreparedStatement pStmt = null;
-		List<BbsDTO> bmList = new ArrayList<BbsDTO>();
+		List<BbsMember> bmList = new ArrayList<BbsMember>();
 		try {
 			pStmt = conn.prepareStatement(query);
+			if (page != 0)
+				pStmt.setInt(1, offset);
 			ResultSet rs = pStmt.executeQuery();
 			while (rs.next()) {	
-				BbsDTO bmDto = new BbsDTO();
+				BbsMember bmDto = new BbsMember();
 				bmDto.setId(rs.getInt(1));
 				bmDto.setTitle(rs.getString(2));
 				bmDto.setName(rs.getString(3));
-				bmDto.setDate(rs.getString(4));
+				bmDto.setDate(rs.getString(4).substring(0, 16));
 				bmList.add(bmDto);
 			}
 			rs.close();
@@ -229,57 +268,5 @@ public class BbsDAO {
 			if (conn != null && !conn.isClosed())
 				conn.close();
 		} catch (Exception se1) { }
-	}
-	
-	public int getNext() {
-		String SQL = "select id from bbs order by id desc;";
-		try {
-			PreparedStatement pStmt = conn.prepareStatement(SQL);
-			ResultSet rs = pStmt.executeQuery();
-			if (rs.next()) {
-				return rs.getInt(1) + 1;
-			} return 1;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return -1;
-	} 
-	
-	public ArrayList<BbsDTO> getList(int pageNumber){
-		String SQL = "select * from bbs where bbs.memberId < ? order by date desc limit 10";
-		ArrayList<BbsDTO> list = new ArrayList<BbsDTO>();
-			try {
-				PreparedStatement pStmt = conn.prepareStatement(SQL);
-				pStmt.setInt(1,  getNext() - (pageNumber - 1) * 10);
-				ResultSet rs = pStmt.executeQuery();
-				while (rs.next()) {
-					BbsDTO bDto = new BbsDTO();
-					bDto.setId(rs.getInt(1));
-					bDto.setMemberId(rs.getInt(2));
-					bDto.setTitle(rs.getString(3));
-					bDto.setName(rs.getString(4));
-					bDto.setContent(rs.getString(5));
-					list.add(bDto);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return list;
-	 }
- 
-	public boolean nextPage(int pageNumber) {
-		String SQL = "select * from bbs where bbs.memberId < ? order by date desc limit 10";
-		ArrayList<BbsDTO> list = new ArrayList<BbsDTO>();
-			try {
-				PreparedStatement pStmt = conn.prepareStatement(SQL);
-				pStmt.setInt(1,  getNext() - (pageNumber - 1) * 10);
-				ResultSet rs = pStmt.executeQuery();
-				while (rs.next()) {
-					return true;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return false;
 	}
 }

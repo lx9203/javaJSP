@@ -132,7 +132,7 @@ public class MemberDAO {
     public MemberDTO recentId() {
     	String sql = "select * from member order by id desc limit 1;";
     	MemberDTO mDto = selectOne(sql);
-		return mDto;
+    	return mDto;
     }
     
     public MemberDTO searchById(int memberId) {
@@ -174,12 +174,45 @@ public class MemberDAO {
     	return member;
     }
     
-    public List<MemberDTO> selectAll() {
-    	String query = "select * from member;";
+    public int getCount() {
+    	String query = "select count(*) from member;";
+		PreparedStatement pStmt = null;
+		int count = 0;
+		try {
+			pStmt = conn.prepareStatement(query);
+			ResultSet rs = pStmt.executeQuery();
+			while (rs.next()) {				
+				count = rs.getInt(1);
+			}
+			rs.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pStmt != null && !pStmt.isClosed()) 
+					pStmt.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		return count;
+    }
+    
+    public List<MemberDTO> selectAll(int page) {
+    	int offset = 0;
+		String query = null;
+		if (page == 0) {	// page가 0이면 모든 데이터를 보냄
+			query = "select * from member;";
+		} else {			// page가 0이 아니면 해당 페이지 데이터만 보냄
+			query = "select * from member limit ?, 10;";
+			offset = (page - 1) * 10;
+		}
     	PreparedStatement pStmt = null;
     	List<MemberDTO> memberList = new ArrayList<MemberDTO>();
     	try {
 			pStmt = conn.prepareStatement(query);
+			if (page != 0)
+				pStmt.setInt(1, offset);
 			ResultSet rs = pStmt.executeQuery();
 			
 			while (rs.next()) {
