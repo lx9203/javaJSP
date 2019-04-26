@@ -1,5 +1,7 @@
 package member;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,7 +10,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BbsDAO {
+	private static final Logger LOG = LoggerFactory.getLogger(BbsDAO.class);
     private static final String USERNAME = "javauser";
     private static final String PASSWORD = "javapass";
     private static final String URL = "jdbc:mysql://localhost:3306/world?verifyServerCertificate=false&useSSL=false";
@@ -23,6 +29,31 @@ public class BbsDAO {
 		}
     }
 	
+    public String prepareDownload() {
+    	StringBuffer sb = new StringBuffer();
+    	List<BbsMember> bmList = selectJoinAll(0);
+    	
+    	try {
+			FileWriter fw = new FileWriter("C:/Temp/BbsMemberList.csv");
+			String head = "아이디,이름,생년월일,주소\r\n";
+			sb.append(head);
+			fw.write(head);
+			LOG.debug(head.substring(0, head.length()-2));
+			for (BbsMember bmDto : bmList) {
+				String line = bmDto.getId() + "," + bmDto.getTitle() + "," + bmDto.getName() + "," 
+						+ bmDto.getDate() + "," + bmDto.getContent() + "\r\n";
+				sb.append(line);
+				fw.write(line);
+				LOG.debug(line.substring(0, line.length()-2));
+			}
+			fw.flush();
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	return sb.toString();
+    }
+    
     public void createBbsTable() {
     	String query = "create table if not exists bbs (" + 
     			"  id int unsigned not null auto_increment," + 
@@ -172,6 +203,7 @@ public class BbsDAO {
 		String query = "select bbs.id, bbs.title, member.name, bbs.date, bbs.content from bbs " + 
 				"inner join member on bbs.memberId=member.id where bbs.id=?;";;
 		PreparedStatement pStmt = null;
+		Utility util = new Utility();
 		BbsMember bmDto = new BbsMember();
 		int result = -1;
 		try {
@@ -183,7 +215,7 @@ public class BbsDAO {
 				bmDto.setTitle(rs.getString(2));
 				bmDto.setName(rs.getString(3));
 				bmDto.setDate(rs.getString(4).substring(0, 16));
-				bmDto.setContent(rs.getString(5));
+				bmDto.setContent(util.lf2Br(rs.getString(5)));
 			}
 			rs.close();
 		} catch (Exception e) {
@@ -203,10 +235,10 @@ public class BbsDAO {
 		int offset = 0;
 		String query = null;
 		if (page == 0) {	// page가 0이면 모든 데이터를 보냄
-			query = "select bbs.id, bbs.title, member.name, bbs.date from bbs " + 
+			query = "select bbs.id, bbs.title, member.name, bbs.date, bbs.content from bbs " + 
 					"inner join member on bbs.memberId=member.id order by bbs.id desc;";
 		} else {			// page가 0이 아니면 해당 페이지 데이터만 보냄
-			query = "select bbs.id, bbs.title, member.name, bbs.date from bbs " + 
+			query = "select bbs.id, bbs.title, member.name, bbs.date, bbs.content from bbs " + 
 					"inner join member on bbs.memberId=member.id order by bbs.id desc limit ?, 10;";
 			offset = (page - 1) * 10;
 		}
@@ -223,6 +255,7 @@ public class BbsDAO {
 				bmDto.setTitle(rs.getString(2));
 				bmDto.setName(rs.getString(3));
 				bmDto.setDate(rs.getString(4).substring(0, 16));
+				bmDto.setContent(rs.getString(5));
 				bmList.add(bmDto);
 			}
 			rs.close();

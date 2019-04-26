@@ -35,7 +35,7 @@
 	<br>
 	<button onclick="location.href='bbsServlet?action=update&id=${bm.id}'">수정</button>&nbsp;&nbsp;
 	<button onclick="location.href='bbsServlet?action=delete&id=${bm.id}'">삭제</button>&nbsp;&nbsp;
-	<a href="bbsServlet?action=list&page=1">목록으로</a>
+	<a href="bbsServlet?action=list&page=${currentBbsPage}">목록으로</a>
 	</center>
 </body>
 </html>

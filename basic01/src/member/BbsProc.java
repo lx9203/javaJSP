@@ -36,6 +36,7 @@ public class BbsProc extends HttpServlet {
 		BbsMember bMem = null;
 		BbsDTO bDto = null;
 		RequestDispatcher rd = null;
+		Utility util = new Utility();
 		int id = 0;
 		int memberId = 0;
 		String title = null;
@@ -95,7 +96,7 @@ public class BbsProc extends HttpServlet {
 			
 		case "write":
 			title = request.getParameter("title");
-			content = lf2Br(request.getParameter("content"));
+			content = request.getParameter("content");
 			bDto = new BbsDTO(memberId, title, content);
 			bDao = new BbsDAO();
 			bDao.insertBbs(bDto);
@@ -125,7 +126,8 @@ public class BbsProc extends HttpServlet {
 			bDto = bDao.selectOne(id);
 			if (bDto.getMemberId() != memberId) {
 				message = "id = " + id + " 에 대한 수정 권한이 없습니다.";
-				url = "bbsServlet?action=list&page=1";
+				curPage = (int)session.getAttribute("currentBbsPage");
+				url = "bbsServlet?action=list&page=" + curPage;
 				request.setAttribute("message", message);
 				request.setAttribute("url", url);
 				rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -136,7 +138,7 @@ public class BbsProc extends HttpServlet {
 			bMem = bDao.ViewData(id);
 			bDao.close();
 			
-			bMem.setContent(br2Lf(bMem.getContent()));
+			bMem.setContent(bMem.getContent());
 			request.setAttribute("bbsMember", bMem);
 			rd = request.getRequestDispatcher("bbsUpdate.jsp");
 	        rd.forward(request, response);
@@ -147,7 +149,7 @@ public class BbsProc extends HttpServlet {
 				id = Integer.parseInt(request.getParameter("id"));
 			}
 			title = request.getParameter("title");
-			content = lf2Br(request.getParameter("content"));
+			content = request.getParameter("content");
 			bDto = new BbsDTO(id, memberId, title, "", content);
 			bDao = new BbsDAO();
 			bDao.updateBbs(bDto);
@@ -176,7 +178,7 @@ public class BbsProc extends HttpServlet {
 			bDao.deleteBbs(id);
 			bDao.close();
 			message = "id = " + id + " 이/가 삭제되었습니다.";
-			url = "bbsServlet?action=list&page=1";
+			url = "bbsServlet?action=list&page=" + curPage;
 			request.setAttribute("message", message);
 			request.setAttribute("url", url);
 			rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -185,29 +187,5 @@ public class BbsProc extends HttpServlet {
 			
 		default:
 		}
-	}
-	
-	protected String lf2Br(String content) {
-		StringBuffer sb = new StringBuffer();
-		for (int i=0; i<content.length(); i++) {
-			if (content.charAt(i) == '\r') {
-				sb.append("<br>");
-				sb.append(content.charAt(i));
-			} else
-				sb.append(content.charAt(i));
-		}
-		return sb.toString();
-	}
-	protected String br2Lf(String content) {
-		StringBuffer sb = new StringBuffer(content);
-		int count = 0;
-		while (true) {
-			int index = sb.indexOf("<br>", count);
-			if (index < 0)
-				break;
-			sb.delete(index, index+4);
-			count += 4;
-		}
-		return sb.toString();
 	}
 }
