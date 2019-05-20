@@ -52,6 +52,7 @@ public class CustomerDAO {
 		return cId;
 	}
 	
+	
 	public void addCustomer(CustomerDTO cDto) {
 		LOG.trace("addCustomer(): " + cDto.toString());
 		BCrypt bc = new BCrypt();
