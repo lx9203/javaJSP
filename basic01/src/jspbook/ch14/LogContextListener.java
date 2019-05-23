@@ -1,23 +1,18 @@
 package jspbook.ch14;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+import java.util.logging.*;
 
-import org.slf4j.*;
+import javax.servlet.*;
+import javax.servlet.annotation.*;
 
 @WebListener
-public class LogContextListener implements ServletContextListener {
+public abstract class LogContextListener implements ServletContextListener {
 	Logger log;
 	
 	public void contextDestroyed(ServletContextEvent arg0) {
 		log.info("LogContextListener stop");
 	}
 	
-	public void contextInitialized(ServletContextEvent arg0) {
-		log = LoggerFactory.getLogger(this.getClass());
-		log.info("LogContextListener start");
-	}
 	
 }
 
